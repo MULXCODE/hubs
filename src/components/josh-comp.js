@@ -25,9 +25,6 @@ AFRAME.registerComponent("josh-comp", {
         color: 'pink',
         map: new THREE.CanvasTexture(canvas),
         side: THREE.DoubleSide,
-        // opacity: 1.0,
-        // transparent: true,
-        // fog: false
       })
     );
     mesh.matrixNeedsUpdate = true;
@@ -36,16 +33,7 @@ AFRAME.registerComponent("josh-comp", {
 
     this.el.classList.add("interactable");
     this.log("init-ing josh comp")
-    // this.canvas = document.getElementById('tic-tac-toe')
     this.josh_redraw()
-    // this.onHover = () => {
-    //   this.hovering = true;
-    //   this.log("Hoevering")
-    // };
-    // this.onHoverOut = () => {
-    //   this.hovering = false;
-    //   this.log("stop hovering")
-    // };
 
     this.el.object3D.addEventListener("interact", (e) => {
       console.log(e, this.el.sceneEl.systems.interaction.getActiveIntersection())
@@ -124,3 +112,40 @@ AFRAME.registerComponent("josh-comp", {
     this.log(intersection)
   }
 });
+
+AFRAME.registerComponent('josh-wand',{
+  schema: {
+    color: { type: "string" },
+  },
+  log(str) {
+    console.log("===========",str)
+  },
+  init() {
+    const mesh = new THREE.Mesh(
+      new THREE.CylinderBufferGeometry(0.1,0.1,1),
+      new THREE.MeshBasicMaterial({
+        color: this.data.color
+    })
+    );
+    mesh.rotation.x = Math.PI/2;
+    mesh.matrixNeedsUpdate = true;
+    this.el.setObject3D("mesh", mesh);
+    this.mesh = mesh;
+
+    this.el.classList.add("interactable");
+    this.el.setAttribute("is-remote-hover-target", "");
+    this.el.setAttribute("tags", {
+      isHandCollisionTarget: true,
+      isHoldable: true,
+      offersHandConstraint: true,
+      offersRemoteConstraint: true,
+      togglesHoveredActionSet: true,
+      singleActionButton: true
+    });
+    this.el.object3D.addEventListener("interact", console.log);
+    this.el.setAttribute("body-helper", { type: "dynamic", mass: 1, collisionFilterGroup: 1, collisionFilterMask: 15 });
+    this.el.setAttribute("matrix-auto-update", "");
+    this.el.setAttribute("floaty-object", { modifyGravityOnRelease: true, autoLockOnLoad: true });
+    this.log("made wand")
+  }
+})

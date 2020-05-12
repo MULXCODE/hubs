@@ -1303,13 +1303,23 @@
         </a-entity>
 
         <a-entity id="josh-test-cube"
-                  class="interactable"
+            class="interactable"
             position="0 5 -3"
             josh-comp="active:true"
             is-remote-hover-target
                   tags="singleActionButton:true;"
             body-helper="type: dynamic; mass: 0.001; collisionFilterGroup: 1; collisionFilterMask: 8;"
         ></a-entity>
+        <a-entity id="josh-test-wand1"
+                  josh-wand="color:green;"
+                  position="1 2 -2"
+        >
+        </a-entity>
+        <a-entity id="josh-test-wand2"
+                  josh-wand="color:red;"
+                  position="-1 2 -2"
+        >
+        </a-entity>
     </a-scene>
 
     <div id="ui-root"></div>
