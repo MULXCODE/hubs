@@ -1301,6 +1301,15 @@
         </a-entity>
         <a-entity id="scene-preview-node">
         </a-entity>
+
+        <a-entity id="josh-test-cube"
+                  class="interactable"
+            position="0 5 -3"
+            josh-comp="active:true"
+            is-remote-hover-target
+                  tags="singleActionButton:true;"
+            body-helper="type: dynamic; mass: 0.001; collisionFilterGroup: 1; collisionFilterMask: 8;"
+        ></a-entity>
     </a-scene>
 
     <div id="ui-root"></div>

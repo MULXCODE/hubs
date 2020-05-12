@@ -113,6 +113,7 @@ import "./components/periodic-full-syncs";
 import "./components/inspect-button";
 import "./components/set-max-resolution";
 import "./components/avatar-audio-source";
+import "./components/josh-comp";
 import { sets as userinputSets } from "./systems/userinput/sets";
 
 import ReactDOM from "react-dom";
@@ -153,6 +154,7 @@ import "./systems/hubs-systems";
 import "./systems/capture-system";
 import "./systems/listed-media";
 import "./systems/linked-media";
+import "./systems/josh-sys";
 import { SOUND_CHAT_MESSAGE } from "./systems/sound-effects-system";
 
 import "./gltf-component-mappings";
