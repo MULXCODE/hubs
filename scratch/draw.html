@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style type="text/css">
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="canvas" width="500" height="500"></canvas>
+
+
+<script type="module">
+    const $ = (sel) => document.querySelector(sel)
+    const on = (el,type,cb) => el.addEventListener(type,cb)
+    let pressed = false
+    let prev = null
+
+    on($("#canvas"),'mousedown',(e)=>{
+      pressed = true
+      prev = {x:e.clientX, y:e.clientY}
+    })
+    on($("#canvas"),'mousemove',(e)=>{
+      if(!pressed)return
+      let c = $("#canvas").getContext('2d')
+      c.strokeStyle = 'black'
+      c.beginPath()
+      c.moveTo(prev.x,prev.y)
+      prev = {x:e.clientX, y:e.clientY}
+      c.lineTo(prev.x,prev.y)
+      c.stroke()
+    })
+    on($("#canvas"),'mouseup',(e)=>{
+      pressed = false
+    })
+</script>
+</body>
+</html>
