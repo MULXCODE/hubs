@@ -14,29 +14,57 @@
 <canvas id="canvas" width="500" height="500"></canvas>
 
 
+<!--<script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.27.6.js"></script>-->
+<script src="../node_modules/pubnub/dist/web/pubnub.js"></script>
 <script type="module">
-    const $ = (sel) => document.querySelector(sel)
-    const on = (el,type,cb) => el.addEventListener(type,cb)
-    let pressed = false
-    let prev = null
+  const settings = {
+    publishKey: 'pub-c-1cba58da-c59a-4b8b-b756-09e9b33b1edd',
+    subscribeKey: 'sub-c-39263f3a-f6fb-11e7-847e-5ef6eb1f4733',
+    uuid:'mysketchclient'
+  }
+  console.log("making pubnub")
+  let pubnub = new PubNub(settings)
+  pubnub.addListener({
+    status: (e) => console.log(e),
+    message: (m)=>console.log(m),
+  })
 
-    on($("#canvas"),'mousedown',(e)=>{
-      pressed = true
-      prev = {x:e.clientX, y:e.clientY}
+  console.log("made pubnub")
+  // pubnub.subscribe({
+  //   channels:['draw-demo-754']
+  // })
+
+  const $ = (sel) => document.querySelector(sel)
+  const on = (el,type,cb) => el.addEventListener(type,cb)
+
+
+
+  let pressed = false
+  let prev = null
+
+  on($("#canvas"),'mousedown',(e)=>{
+    pressed = true
+    prev = {x:e.clientX, y:e.clientY}
+  })
+  on($("#canvas"),'mousemove',(e)=>{
+    if(!pressed)return
+    let c = $("#canvas").getContext('2d')
+    c.strokeStyle = 'black'
+    c.beginPath()
+    c.moveTo(prev.x,prev.y)
+    prev = {x:e.clientX, y:e.clientY}
+    c.lineTo(prev.x,prev.y)
+    c.stroke()
+    pubnub.publish({
+      channel: 'draw-demo-754',
+      message: { point:prev }
+    }, (status, response) => {
+      console.log("published",status,response)
     })
-    on($("#canvas"),'mousemove',(e)=>{
-      if(!pressed)return
-      let c = $("#canvas").getContext('2d')
-      c.strokeStyle = 'black'
-      c.beginPath()
-      c.moveTo(prev.x,prev.y)
-      prev = {x:e.clientX, y:e.clientY}
-      c.lineTo(prev.x,prev.y)
-      c.stroke()
-    })
-    on($("#canvas"),'mouseup',(e)=>{
-      pressed = false
-    })
+  })
+  on($("#canvas"),'mouseup',(e)=>{
+    pressed = false
+  })
 </script>
 </body>
 </html>
