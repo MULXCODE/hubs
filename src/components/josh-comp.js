@@ -1,4 +1,6 @@
-import PubNub from "pubnub"
+
+import { MODES, SketchCanvas } from "./sketchcanvas.js";
+import { SketchCanvasReceiver } from "./sketchcanvas-receiver.js";
 //https://localhost:8080/hub.html?hub_id=6wWogFt&vr_entry_type=2d_now&disable_telemetry=true
 AFRAME.registerComponent("josh-comp", {
   schema: {
@@ -159,16 +161,7 @@ AFRAME.registerComponent("josh-sketch-canvas",{
   log(str) {
     console.log("===========",str)
   },
-  points: [],
   init() {
-    const settings = {
-      publishKey: 'pub-c-1cba58da-c59a-4b8b-b756-09e9b33b1edd',
-      subscribeKey: 'sub-c-39263f3a-f6fb-11e7-847e-5ef6eb1f4733',
-      uuid:'mysketchclient'
-    }
-    let pubnub = new PubNub(settings)
-
-    console.log("making pubnub", pubnub)
 
     let canvas = document.createElement('canvas')
     canvas.width  = 500
@@ -186,46 +179,7 @@ AFRAME.registerComponent("josh-sketch-canvas",{
     mesh.matrixNeedsUpdate = true;
     this.el.setObject3D("mesh", mesh);
     this.mesh = mesh;
-
-    // this.el.classList.add("interactable");
-    this.log("init-ing josh comp")
-    // this.josh_redraw()
-
-    // this.el.object3D.addEventListener("interact", (e) => {
-    //   console.log(e, this.el.sceneEl.systems.interaction.getActiveIntersection())
-    //   let inter = this.el.sceneEl.systems.interaction.getActiveIntersection()
-    //   this.josh_redraw()
-    // });
-
-    const handlePoint = (pt) => {
-      this.points.push(pt)
-      this.josh_redraw()
-    }
-
-    pubnub.addListener({
-      status: (e) => console.log(e),
-      message: (m)=>handlePoint(m.message.point)
-    })
-    pubnub.subscribe({
-      channels:['draw-demo-754']
-    })
-  },
-  josh_redraw(){
-    let c = this.canvas.getContext('2d')
-    let w = this.canvas.width;
-    let h = this.canvas.height
-    c.fillStyle = 'white'
-    c.fillRect(0,0,w,h)
-
-    c.strokeStyle = 'black'
-    c.beginPath()
-    c.moveTo(0,0)
-    this.points.forEach(pt=>{
-      c.lineTo(pt.x,pt.y)
-    })
-    c.stroke()
-
-    this.mesh.material.map.needsUpdate = true
+    this.sc = new SketchCanvasReceiver(this.canvas,mesh)
   },
   tick2() {
   }
