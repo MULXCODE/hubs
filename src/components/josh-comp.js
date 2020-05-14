@@ -1,6 +1,8 @@
 
 import { MODES, SketchCanvas } from "./sketchcanvas.js";
 import { SketchCanvasReceiver } from "./sketchcanvas-receiver.js";
+import { TYPE } from "three-ammo/constants.js";
+import { Vector3 } from "three";
 //https://localhost:8080/hub.html?hub_id=6wWogFt&vr_entry_type=2d_now&disable_telemetry=true
 AFRAME.registerComponent("josh-comp", {
   schema: {
@@ -180,6 +182,25 @@ AFRAME.registerComponent("josh-sketch-canvas",{
     this.el.setObject3D("mesh", mesh);
     this.mesh = mesh;
     this.sc = new SketchCanvasReceiver(this.canvas,mesh)
+    this.sc.addEventListener('TEAR',()=>{
+      console.log("got a tear event")
+      let ent = document.createElement("a-entity");
+      AFRAME.scenes[0].appendChild(ent);
+      // let url = "https://vr.josh.earth/assets/2dimages/saturnv.jpg"
+      let url2 = this.canvas.toDataURL('image/png')
+      ent.setAttribute("media-loader", { src: url2, fitToBox: true, resolve: true });
+      ent.setAttribute("networked", { template: "#interactable-media" } )
+      ent.setAttribute("css-class", "interactable");
+      ent.setAttribute("scale", { x: 2, y: 2, z: 2});
+      console.log("current position",this.el.object3D)
+      console.log("current position",this.el.object3D.position)
+      let count = Array.from(this.el.childNodes).length
+      console.log("children count is =" + count)
+      let p2 = new Vector3(count*2+3,0,0)
+      console.log("new position is",p2)
+      ent.setAttribute("position", `${p2.x} ${p2.y} ${p2.z}`);
+      this.el.appendChild(ent);
+    })
   },
   tick2() {
   }

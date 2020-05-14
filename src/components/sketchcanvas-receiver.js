@@ -9,16 +9,30 @@ export class SketchCanvasReceiver extends SketchCanvas {
     this.mesh = mesh
     this.redraw(this.canvas)
     this.setupConnection()
+    this.listeners = {}
+  }
+
+  addEventListener(type,cb) {
+    this._getListeners(type).push(cb)
+  }
+
+  _getListeners(type) {
+    if(!this.listeners[type]) this.listeners[type] = []
+    return this.listeners[type]
   }
 
   handleMessage(m) {
-    // console.log("got remote message",m)
-    if(m.command === COMMANDS.MOUSE_DOWN) this.startStroke(m.payload)
-    if(m.command === COMMANDS.MOUSE_DRAG) this.dragStroke(m.payload)
-    if(m.command === COMMANDS.MOUSE_UP)   this.endStroke(m.payload)
-    if(m.command === COMMANDS.STROKE_COLOR) this.setStrokeColor(m.payload)
-    if(m.command === COMMANDS.STROKE_WIDTH) this.setStrokeWidth(m.payload)
-    if(m.command === COMMANDS.CLEAR) this.clear()
+    console.log("got remote message",m)
+    if(m.command === COMMANDS.MOUSE_DOWN) return this.startStroke(m.payload)
+    if(m.command === COMMANDS.MOUSE_DRAG) return this.dragStroke(m.payload)
+    if(m.command === COMMANDS.MOUSE_UP)   return this.endStroke(m.payload)
+    if(m.command === COMMANDS.STROKE_COLOR) return this.setStrokeColor(m.payload)
+    if(m.command === COMMANDS.STROKE_WIDTH) return this.setStrokeWidth(m.payload)
+    if(m.command === COMMANDS.CLEAR) return this.clear()
+    this._getListeners(m.command).forEach(cb => cb(m))
+  }
+  processMessage(m) {
+    this.handleMessage(m)
     this.redraw(this.canvas)
     this.mesh.material.map.needsUpdate = true
   }
@@ -30,7 +44,7 @@ export class SketchCanvasReceiver extends SketchCanvas {
     this.pubnub = new PubNub(this.pubnub_settings)
     this.pubnub.addListener({
       status: (e) => console.log(e),
-      message: (m)=>this.handleMessage(m.message)
+      message: (m)=>this.processMessage(m.message)
     })
     this.pubnub.subscribe({
       channels:[this.pubnub_CHANNEL]

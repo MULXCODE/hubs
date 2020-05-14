@@ -36,7 +36,8 @@ export const COMMANDS = {
   MOUSE_UP:'MOUSE_UP',
   STROKE_WIDTH:'STROKE_WIDTH',
   STROKE_COLOR:'STROKE_COLOR',
-  CLEAR: 'CLEAR'
+  CLEAR: 'CLEAR',
+  TEAR:'TEAR',
 }
 
 export class SketchCanvas {
@@ -75,6 +76,9 @@ export class SketchCanvas {
     let c = canvas.getContext('2d')
     c.fillStyle = 'white'
     c.fillRect(0,0,canvas.width,canvas.height)
+    c.strokeStyle = 'black'
+    c.lineWidth = 8
+    c.strokeRect(0,0,canvas.width,canvas.height)
     this.strokes.forEach(stroke => stroke.redraw(c))
   }
   setStrokeWidth(w) {
@@ -84,6 +88,11 @@ export class SketchCanvas {
   setStrokeColor(c) {
     this.currentColor = c
     this.sendCommand(COMMANDS.STROKE_COLOR,this.currentColor)
+  }
+  tear() {
+    this.strokes = []
+    this.currentStroke = null
+    this.sendCommand(COMMANDS.TEAR,{})
   }
 
 }
